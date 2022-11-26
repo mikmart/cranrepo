@@ -15,10 +15,11 @@ package_index_remove <- function(dir, files) {
 }
 
 package_index_find <- function(dir, package, version = NULL) {
-  packages <- cranlike::package_versions(dir, "File")
-  i <- match(package, packages$Package)
-  if (!is.null(version)) {
-    i <- intersect(i, match(version, packages$Version))
-  }
-  packages[i, "File", drop = TRUE]
+  index_packages <- cranlike::package_versions(dir, "File")
+  packages <- compact(list(Package = package, Version = version))
+  merge(index_packages, packages)$File
+}
+
+compact <- function(x) {
+  Filter(Negate(is.null), x)
 }
