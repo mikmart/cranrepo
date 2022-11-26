@@ -15,5 +15,6 @@ Suggests:
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
-URL: https://github.com/mikmart/cranrepo
+URL: https://github.com/mikmart/cranrepo,
+    https://mikmart.github.io/cranrepo/
 BugReports: https://github.com/mikmart/cranrepo/issues

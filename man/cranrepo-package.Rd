@@ -12,6 +12,7 @@ Basic tools for creating CRAN-like package repositories, adding and removing pac
 Useful links:
 \itemize{
   \item \url{https://github.com/mikmart/cranrepo}
+  \item \url{https://mikmart.github.io/cranrepo/}
   \item Report bugs at \url{https://github.com/mikmart/cranrepo/issues}
 }
 
