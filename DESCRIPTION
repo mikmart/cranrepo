@@ -1,0 +1,17 @@
+Package: cranrepo
+Title: Create and Maintain CRAN-like Repositories
+Version: 0.0.0.9000
+Authors@R: 
+    person("Mikko", "Marttila", , "mikkmart@pm.me", role = c("aut", "cre"))
+Description: Basic tools for creating CRAN-like package repositories,
+    adding and removing packages, and keeping the package index updated.
+License: MIT + file LICENSE
+Imports: 
+    cranlike,
+    fs,
+    rlang
+Suggests: 
+    servr
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
