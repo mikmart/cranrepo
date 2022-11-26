@@ -70,12 +70,13 @@ infer_package_type <- function(file) {
 #' @param r_version If removing a binary package, the version of R that the
 #'   package was built for.
 #'
+#' @return The path(s) to the removed package file(s), invisibly.
 #' @export
 repo_remove <- function(repo, package, version, type, r_version = getRversion()) {
   dir <- repo_packages_path(repo, type, r_version)
   files <- package_index_find(dir, package, version)
   package_index_remove(dir, files)
-  invisible(NULL)
+  invisible(fs::path(files))
 }
 
 #' Update a package index of a repository

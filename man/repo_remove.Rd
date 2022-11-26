@@ -19,6 +19,9 @@ versions.}
 \item{r_version}{If removing a binary package, the version of R that the
 package was built for.}
 }
+\value{
+The path(s) to the removed package file(s), invisibly.
+}
 \description{
 Remove a package from a repository
 }
