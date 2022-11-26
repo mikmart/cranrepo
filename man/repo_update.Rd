@@ -4,11 +4,7 @@
 \alias{repo_update}
 \title{Update a package index of a repository}
 \usage{
-repo_update(
-  repo,
-  type = c("source", "win.binary", "mac.binary"),
-  r_version = getRversion()
-)
+repo_update(repo, type, r_version = getRversion())
 }
 \arguments{
 \item{repo}{Path to the root directory of the package repository.}

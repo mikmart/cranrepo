@@ -8,6 +8,14 @@
 \description{
 Basic tools for creating CRAN-like package repositories, adding and removing packages, and keeping the package index updated.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/mikmart/cranrepo}
+  \item Report bugs at \url{https://github.com/mikmart/cranrepo/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Mikko Marttila \email{mikkmart@pm.me}
 
