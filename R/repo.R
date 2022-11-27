@@ -17,15 +17,17 @@
 #' @export
 repo_create <- function(dir = ".", r_version = getRversion()) {
   repo <- fs::dir_create(dir)
+
   for (type in PACKAGE_TYPES) {
     dir <- repo_packages_path(repo, type, r_version)
     package_index_create(dir)
   }
-  invisible(fs::path(repo))
+
+  invisible(repo)
 }
 
 repo_packages_path <- function(repo, type, r_version = getRversion()) {
-  type <- rlang::arg_match0(type, PACKAGE_TYPES)
+  type <- rlang::arg_match0(type, PACKAGE_TYPES, error_call = rlang::caller_env())
   if (type != "source") {
     os <- switch(type, win.binary = "windows", mac.binary = "macosx")
     fs::path(repo, "bin", os, "contrib", numeric_version(r_version)[, 1:2])
@@ -53,9 +55,17 @@ PACKAGE_TYPES <- c("source", "win.binary", "mac.binary")
 #' @export
 repo_insert <- function(repo, file, type, r_version = getRversion(), replace = FALSE) {
   dir <- repo_packages_path(repo, type, r_version)
-  res <- fs::file_copy(file, fs::dir_create(dir), overwrite = replace)
-  package_index_insert(dir, fs::path_file(res))
-  invisible(fs::path(res))
+  dst <- fs::path(dir, fs::path_file(file))
+
+  if (!replace && any(fs::file_exists(dst))) {
+    abort_existing_packages(dst[fs::file_exists(dst)])
+  }
+
+  fs::dir_create(dir)
+  fs::file_copy(file, dst, overwrite = replace)
+  package_index_insert(dir, fs::path_file(dst))
+
+  invisible(dst)
 }
 
 #' Remove a package from a repository
@@ -76,16 +86,17 @@ repo_insert <- function(repo, file, type, r_version = getRversion(), replace = F
 #' @export
 repo_remove <- function(repo, package, version, type, r_version = getRversion(), commit = FALSE) {
   dir <- repo_packages_path(repo, type, r_version)
+
   files <- package_index_find(dir, package, version)
+  paths <- fs::path(dir, files)
+
   if (commit) {
     package_index_remove(dir, files)
   } else {
-    # Higher level packages can suppress these and make their own
-    rlang::inform("[i] Would remove the following files:")
-    rlang::inform(paste(" *", fs::path(dir, files), collapse = "\n"))
-    rlang::inform("[i] Specify `commit = TRUE` to remove them.")
+    inform_removal_candidates(paths)
   }
-  invisible(fs::path(dir, files))
+
+  invisible(paths)
 }
 
 #' Update the package index of a repository
@@ -102,7 +113,9 @@ repo_remove <- function(repo, package, version, type, r_version = getRversion(),
 repo_update <- function(repo, type, r_version = getRversion()) {
   type <- rlang::arg_match0(type, PACKAGE_TYPES)
   dir <- repo_packages_path(repo, type, r_version)
+
   package_index_update(dir, type)
+
   invisible(NULL)
 }
 

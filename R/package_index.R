@@ -15,9 +15,9 @@ package_index_remove <- function(dir, files) {
 }
 
 package_index_find <- function(dir, package, version = NULL) {
-  index_packages <- cranlike::package_versions(dir, "File")
+  indexed_packages <- cranlike::package_versions(dir, "File")
   packages <- compact(list(Package = package, Version = version))
-  merge(index_packages, packages)$File
+  merge(indexed_packages, packages)$File
 }
 
 compact <- function(x) {
