@@ -81,9 +81,9 @@ repo_remove <- function(repo, package, version, type, r_version = getRversion(),
     package_index_remove(dir, files)
   } else {
     # Higher level packages can suppress these and make their own
-    message("[i] Would remove the following files:")
-    message(paste("*", fs::path(dir, files), collapse = "\n"))
-    message("[i] Specify `commit = TRUE` to remove them.")
+    rlang::inform("[i] Would remove the following files:")
+    rlang::inform(paste(" *", fs::path(dir, files), collapse = "\n"))
+    rlang::inform("[i] Specify `commit = TRUE` to remove them.")
   }
   invisible(fs::path(dir, files))
 }
