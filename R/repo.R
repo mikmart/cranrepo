@@ -52,8 +52,8 @@ repo_insert <- function(repo, file, type, r_version = getRversion(), replace = T
 
 #' Remove a package from a repository
 #'
-#' By default, shows a list of files that _would be_ removed.
-#' Explicitly specify `commit = TRUE` to actually remove them.
+#' For a dry run, specify `commit = FALSE` to just show a list of files
+#' that _would be_ removed.
 #'
 #' @inheritParams repo_insert
 #' @param package The name of the package to remove.
