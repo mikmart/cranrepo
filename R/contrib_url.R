@@ -1,5 +1,5 @@
 contrib_url <- function(repo, type, r_version = getRversion()) {
-  type <- rlang::arg_match0(type, PACKAGE_TYPES, "type", rlang::caller_env())
+  type <- rlang::arg_match0(type, c("source", "win.binary", "mac.binary"))
   minor_r_version <- numeric_version(r_version)[, 1:2]
   dir <- switch(type,
     source = fs::path("src", "contrib"),
@@ -8,8 +8,6 @@ contrib_url <- function(repo, type, r_version = getRversion()) {
   )
   structure(fs::path(repo, dir), type = type)
 }
-
-PACKAGE_TYPES <- c("source", "win.binary", "mac.binary")
 
 contrib_url_create <- function(dir) {
   fs::dir_create(dir)

@@ -17,7 +17,7 @@
 #' @export
 repo_create <- function(root = ".", r_version = getRversion()) {
   repo <- fs::dir_create(root)
-  for (type in PACKAGE_TYPES) {
+  for (type in c("source", "win.binary", "mac.binary")) {
     contrib_url_create(contrib_url(repo, type, r_version))
   }
   invisible(repo)
