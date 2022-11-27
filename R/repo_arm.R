@@ -23,6 +23,7 @@ repo_arm_create <- function(arm) {
   dir <- repo_arm_path(arm)
   fs::dir_create(dir)
   package_index_create(dir)
+  fs::path(dir)
 }
 
 repo_arm_insert <- function(arm, file) {
