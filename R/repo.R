@@ -38,7 +38,7 @@ repo_create <- function(dir = ".", r_version = getRversion()) {
 #' @family functions to manage repositories
 #' @concept manage
 #' @export
-repo_insert <- function(repo, file, type, r_version = getRversion(), replace = FALSE) {
+repo_insert <- function(repo, file, type, r_version = getRversion(), replace = TRUE) {
   arm <- repo_arm(repo, type, r_version)
   if (!replace && any(repo_arm_contains(arm, file) -> exist)) {
     rlang::abort(
@@ -66,7 +66,7 @@ repo_insert <- function(repo, file, type, r_version = getRversion(), replace = F
 #' @family functions to manage repositories
 #' @concept manage
 #' @export
-repo_remove <- function(repo, package, version, type, r_version = getRversion(), commit = FALSE) {
+repo_remove <- function(repo, package, version, type, r_version = getRversion(), commit = TRUE) {
   arm <- repo_arm(repo, type, r_version)
   if (!commit) {
     return(repo_arm_find(arm, package, version))

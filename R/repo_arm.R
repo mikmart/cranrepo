@@ -1,5 +1,3 @@
-#' Internal repository arm API for developers
-#' @keywords internal
 repo_arm <- function(root, type, r_version) {
   type <- rlang::arg_match0(type, PACKAGE_TYPES, error_call = rlang::caller_env())
   if (type != "source") {
@@ -13,25 +11,20 @@ repo_arm <- function(root, type, r_version) {
 
 PACKAGE_TYPES <- c("source", "win.binary", "mac.binary")
 
-#' @rdname repo_arm
 repo_arm_path <- function(arm, ...) {
   fs::path(arm, ...)
 }
 
-#' @rdname repo_arm
 repo_arm_type <- function(arm) {
   attr(arm, "type")
 }
 
-#' @rdname repo_arm
 repo_arm_create <- function(arm) {
   dir <- repo_arm_path(arm)
   fs::dir_create(dir)
   package_index_create(dir)
-  fs::path(dir)
 }
 
-#' @rdname repo_arm
 repo_arm_insert <- function(arm, file) {
   dir <- repo_arm_path(arm)
   fs::dir_create(dir)
@@ -40,13 +33,11 @@ repo_arm_insert <- function(arm, file) {
   fs::path(dst)
 }
 
-#' @rdname repo_arm
 repo_arm_contains <- function(arm, file) {
   dir <- repo_arm_path(arm)
   fs::path_file(file) %in% package_index_list(dir)
 }
 
-#' @rdname repo_arm
 repo_arm_remove <- function(arm, package, version) {
   dir <- repo_arm_path(arm)
   files <- package_index_find(dir, package, version)
@@ -54,14 +45,12 @@ repo_arm_remove <- function(arm, package, version) {
   fs::path(dir, files)
 }
 
-#' @rdname repo_arm
 repo_arm_find <- function(arm, package, version) {
   dir <- repo_arm_path(arm)
   files <- package_index_find(dir, package, version)
   fs::path(dir, files)
 }
 
-#' @rdname repo_arm
 repo_arm_update <- function(arm) {
   dir <- repo_arm_path(arm)
   package_index_update(dir, repo_arm_type(arm))
