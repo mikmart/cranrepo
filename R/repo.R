@@ -76,7 +76,7 @@ repo_remove <- function(repo, package, version, type, r_version = getRversion())
   dir <- repo_packages_path(repo, type, r_version)
   files <- package_index_find(dir, package, version)
   package_index_remove(dir, files)
-  invisible(fs::path(files))
+  invisible(fs::path(dir, files))
 }
 
 #' Update a package index of a repository
