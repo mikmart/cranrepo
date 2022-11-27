@@ -10,7 +10,7 @@ abort_existing_packages <- function(paths) {
 
 inform_removal_candidates <- function(paths) {
   rlang::inform(c(
-    `!` = "Would remove the following package bundles:",
+    `!` = "Would remove the following packages:",
     rlang::set_names(paths, " "),
     i = "Specify `commit = TRUE` to permanently delete them."
   ))
