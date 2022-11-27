@@ -20,14 +20,7 @@ repo_create <- function(dir = ".", r_version = getRversion()) {
   for (type in PACKAGE_TYPES) {
     repo_arm_create(repo_arm(repo, type, r_version))
   }
-  inform_repository_created(repo)
   invisible(repo)
-}
-
-inform_repository_created <- function(root) {
-  rlang::inform(c(
-    v = sprintf("Created repository at %s.", root)
-  ))
 }
 
 #' Insert a package bundle into a repository
@@ -48,28 +41,13 @@ inform_repository_created <- function(root) {
 repo_insert <- function(repo, file, type, r_version = getRversion(), replace = FALSE) {
   arm <- repo_arm(repo, type, r_version)
   if (!replace && any(repo_arm_contains(arm, file) -> exist)) {
-    paths <- repo_arm_path(arm, fs::path_file(file))
-    abort_existing_packages(paths[which(exist)])
+    rlang::abort(
+      "Package(s) already present in repository.",
+      files = repo_arm_path(arm, fs::path_file(file))[which(exist)],
+      class = "cranrepo_error_packages_exist"
+    )
   }
-  files <- repo_arm_insert(arm, file)
-  inform_packages_inserted(files)
-  invisible(files)
-}
-
-abort_existing_packages <- function(paths) {
-  dirs <- fs::path_dir(paths)
-  files <- fs::path_file(paths)
-  rlang::abort(c(
-    "Refused to replace existing packages.",
-    rlang::set_names(sprintf("%s exists at %s", files, dirs), "x"),
-    i = "Specify `replace = TRUE` to overwrite them."
-  ), call = rlang::caller_env())
-}
-
-inform_packages_inserted <- function(paths) {
-  rlang::inform(c(
-    v = sprintf("Inserted %d package(s).", length(paths))
-  ))
+  invisible(repo_arm_insert(arm, file))
 }
 
 #' Remove a package from a repository
@@ -90,28 +68,10 @@ inform_packages_inserted <- function(paths) {
 #' @export
 repo_remove <- function(repo, package, version, type, r_version = getRversion(), commit = FALSE) {
   arm <- repo_arm(repo, type, r_version)
-  if (commit) {
-    files <- repo_arm_remove(arm, package, version)
-    inform_packages_removed(files)
-  } else {
-    files <- repo_arm_find(arm, package, version)
-    inform_removal_candidates(files)
+  if (!commit) {
+    return(repo_arm_find(arm, package, version))
   }
-  invisible(files)
-}
-
-inform_packages_removed <- function(paths) {
-  rlang::inform(c(
-    v = sprintf("Removed %d package(s).", length(paths))
-  ))
-}
-
-inform_removal_candidates <- function(paths) {
-  rlang::inform(c(
-    `!` = "Would remove the following packages:",
-    rlang::set_names(paths, " "),
-    i = "Specify `commit = TRUE` to permanently delete them."
-  ))
+  invisible(repo_arm_remove(arm, package, version))
 }
 
 #' Update the package index of a repository
@@ -127,7 +87,6 @@ inform_removal_candidates <- function(paths) {
 #' @export
 repo_update <- function(repo, type, r_version = getRversion()) {
   repo_arm_update(repo_arm(repo, type, r_version))
-  rlang::inform(c(v = "Updated package index."))
 }
 
 #' Serve a repository over HTTP
