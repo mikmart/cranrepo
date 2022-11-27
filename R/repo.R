@@ -20,7 +20,14 @@ repo_create <- function(dir = ".", r_version = getRversion()) {
   for (type in PACKAGE_TYPES) {
     repo_arm_create(repo_arm(repo, type, r_version))
   }
+  inform_repository_created(repo)
   invisible(repo)
+}
+
+inform_repository_created <- function(root) {
+  rlang::inform(c(
+    v = sprintf("Created repository at %s.", root)
+  ))
 }
 
 #' Insert a package bundle into a repository
@@ -44,7 +51,9 @@ repo_insert <- function(repo, file, type, r_version = getRversion(), replace = F
     paths <- repo_arm_path(arm, fs::path_file(file))
     abort_existing_packages(paths[which(exist)])
   }
-  invisible(repo_arm_insert(arm, file))
+  files <- repo_arm_insert(arm, file)
+  inform_packages_inserted(files)
+  invisible(files)
 }
 
 abort_existing_packages <- function(paths) {
@@ -55,6 +64,12 @@ abort_existing_packages <- function(paths) {
     rlang::set_names(sprintf("%s exists at %s", files, dirs), "x"),
     i = "Specify `replace = TRUE` to overwrite them."
   ), call = rlang::caller_env())
+}
+
+inform_packages_inserted <- function(paths) {
+  rlang::inform(c(
+    v = sprintf("Inserted %d package(s).", length(paths))
+  ))
 }
 
 #' Remove a package from a repository
@@ -77,11 +92,18 @@ repo_remove <- function(repo, package, version, type, r_version = getRversion(),
   arm <- repo_arm(repo, type, r_version)
   if (commit) {
     files <- repo_arm_remove(arm, package, version)
+    inform_packages_removed(files)
   } else {
     files <- repo_arm_find(arm, package, version)
     inform_removal_candidates(files)
   }
   invisible(files)
+}
+
+inform_packages_removed <- function(paths) {
+  rlang::inform(c(
+    v = sprintf("Removed %d package(s).", length(paths))
+  ))
 }
 
 inform_removal_candidates <- function(paths) {
@@ -105,6 +127,7 @@ inform_removal_candidates <- function(paths) {
 #' @export
 repo_update <- function(repo, type, r_version = getRversion()) {
   repo_arm_update(repo_arm(repo, type, r_version))
+  rlang::inform(c(v = "Updated package index."))
 }
 
 #' Serve a repository over HTTP
