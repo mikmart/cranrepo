@@ -12,5 +12,7 @@ repo_serve(repo, ...)
 \item{...}{Additional arguments passed on to \code{\link[servr:httd]{servr::httd()}}.}
 }
 \description{
-Serve a repository over HTTP
+Serve packages from a repository over HTTP locally. For production use,
+you would likely have a different file server, but when setting up your
+repository it can be useful to test the behaviour over a web protocol.
 }

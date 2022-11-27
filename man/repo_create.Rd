@@ -7,14 +7,19 @@
 repo_create(dir = ".", r_version = getRversion())
 }
 \arguments{
-\item{dir}{Path to the directory to use as the repository root. Will be
-created if it does not exist.}
+\item{dir}{Path to the directory to use as the repository root.
+Will be created if it does not exist.}
 
-\item{r_version}{The version of R to create binary distributions for.}
+\item{r_version}{The version of R to create binary distribution trees for.}
 }
 \value{
-The path to the repository root directory, invisibly.
+Path to the repository root directory, invisibly.
 }
 \description{
-Create a CRAN-like package repository
+Set up the directory structure and package indexes for
+a CRAN-like package repository suitable to \code{\link[=install.packages]{install.packages()}} from.
+}
+\details{
+Binary distribution trees are always created to avoid errors
+when the repository is accessed via the \verb{file://} protocol.
 }

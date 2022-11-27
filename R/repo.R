@@ -1,25 +1,33 @@
 #' Create a CRAN-like package repository
 #'
-#' @param dir Path to the directory to use as the repository root. Will be
-#'   created if it does not exist.
-#' @param r_version The version of R to create binary distributions for.
+#' Set up the directory structure and package indexes for
+#' a CRAN-like package repository suitable to [install.packages()] from.
+#' 
+#' Binary distribution trees are always created to avoid errors
+#' when the repository is accessed via the `file://` protocol.
+#' 
+#' @param dir Path to the directory to use as the repository root.
+#'   Will be created if it does not exist.
+#' @param r_version The version of R to create binary distribution trees for.
 #'
-#' @return The path to the repository root directory, invisibly.
+#' @return Path to the repository root directory, invisibly.
 #' @export
 repo_create <- function(dir = ".", r_version = getRversion()) {
+  repo <- fs::dir_create(dir)
   for (type in PACKAGE_TYPES) {
-    package_index_create(repo_packages_path(dir, type, r_version))
+    dir <- repo_packages_path(repo, type, r_version)
+    package_index_create(dir)
   }
-  invisible(fs::path(dir))
+  invisible(fs::path(repo))
 }
 
-repo_packages_path <- function(dir, type, r_version = getRversion()) {
+repo_packages_path <- function(repo, type, r_version = getRversion()) {
   type <- rlang::arg_match0(type, PACKAGE_TYPES)
   if (type != "source") {
     os <- switch(type, win.binary = "windows", mac.binary = "macosx")
-    fs::path(dir, "bin", os, "contrib", numeric_version(r_version)[, 1:2])
+    fs::path(repo, "bin", os, "contrib", numeric_version(r_version)[, 1:2])
   } else {
-    fs::path(dir, "src", "contrib")
+    fs::path(repo, "src", "contrib")
   }
 }
 
@@ -27,68 +35,59 @@ PACKAGE_TYPES <- c("source", "win.binary", "mac.binary")
 
 #' Insert a package into a repository
 #'
+#' You can insert multiple packages with one call, as long as they are of the
+#' same type and for the same version of R.
+#' 
 #' @param repo Path to the root directory of the package repository.
 #' @param file Path to the source or binary package bundle to be added.
-#' @param type The type of package to be added. Will be inferred from the file
-#'   name if left `NULL`.
-#' @param r_version When inserting a binary package, the version of R that the
-#'   package was built for.
+#' @param type Type of packages. One of: `"source"`, `"win.binary"`, `"mac.binary"`.
+#' @param r_version For binary packages, the version of R they were built for.
+#' @param replace Logical. Should the package be replaced if already present?
 #'
-#' @return The path to the inserted package file, invisibly.
+#' @return Path(s) to the inserted package file(s), invisibly.
 #' @export
-repo_insert <- function(repo, file, type = NULL, r_version = getRversion()) {
-  if (is.null(type)) {
-    type <- infer_package_type(file)
-  }
-
+repo_insert <- function(repo, file, type, r_version = getRversion(), replace = FALSE) {
   dir <- repo_packages_path(repo, type, r_version)
-  res <- fs::file_copy(file, fs::dir_create(dir), overwrite = TRUE)
+  res <- fs::file_copy(file, fs::dir_create(dir), overwrite = replace)
   package_index_insert(dir, fs::path_file(res))
-
   invisible(fs::path(res))
 }
 
-infer_package_type <- function(file) {
-  switch(
-    fs::path_ext(file),
-    gz = ,
-    xz = ,
-    bz2 = "source",
-    zip = "win.binary",
-    tgz = "mac.binary",
-    rlang::abort("Failed to infer package type. Please specify it explicitly.")
-  )
-}
-
 #' Remove a package from a repository
-#'
-#' @param repo Path to the root directory of the package repository.
+#' 
+#' By default, shows a list of files that _would be_ removed.
+#' Explicitly specify `commit = TRUE` to actually remove them.
+#' 
+#' @inheritParams repo_insert
 #' @param package The name of the package to remove.
-#' @param version The version of the package to remove. Use `NULL` to remove all
-#'   versions.
-#' @param type The type of the package to remove.
-#' @param r_version If removing a binary package, the version of R that the
-#'   package was built for.
+#' @param version The version of the package to remove.
+#'   Use `NULL` to remove all versions.
+#' @param commit Logical. If `FALSE` return the list of files that _would be_
+#'   removed, without actually removing them.
 #'
-#' @return The path(s) to the removed package file(s), invisibly.
+#' @return Path(s) to the removed package file(s), invisibly.
 #' @export
-repo_remove <- function(repo, package, version, type, r_version = getRversion()) {
+repo_remove <- function(repo, package, version, type, r_version = getRversion(), commit = FALSE) {
   dir <- repo_packages_path(repo, type, r_version)
   files <- package_index_find(dir, package, version)
-  package_index_remove(dir, files)
+  if (commit) {
+    package_index_remove(dir, files)
+  } else {
+    # Higher level packages can suppress these and make their own
+    message("[i] Would remove the following files:")
+    message(paste("*", fs::path(dir, files), collapse = "\n"))
+    message("[i] Specify `commit = TRUE` to remove them.")
+  }
   invisible(fs::path(dir, files))
 }
 
-#' Update a package index of a repository
+#' Update the package index of a repository
 #'
-#' Do a full update of a package index in a repository. Functions in this
+#' Do a full update of the package index in a repository. Functions in this
 #' package update the index as they operate, so calling this should only be
 #' necessary if your index has gone out of sync due to external changes.
 #'
-#' @param repo Path to the root directory of the package repository.
-#' @param type The type of packages to update the index for.
-#' @param r_version If updating a binary package index, the R version to update
-#'   the index for.
+#' @inheritParams repo_insert
 #'
 #' @export
 repo_update <- function(repo, type, r_version = getRversion()) {
@@ -100,7 +99,11 @@ repo_update <- function(repo, type, r_version = getRversion()) {
 
 #' Serve a repository over HTTP
 #'
-#' @param repo Path to the root directory of the package repository.
+#' Serve packages from a repository over HTTP locally. For production use,
+#' you would likely have a different file server, but when setting up your
+#' repository it can be useful to test the behaviour over a web protocol. 
+#'
+#' @inheritParams repo_insert
 #' @param ... Additional arguments passed on to [servr::httd()].
 #'
 #' @export

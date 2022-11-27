@@ -4,24 +4,34 @@
 \alias{repo_remove}
 \title{Remove a package from a repository}
 \usage{
-repo_remove(repo, package, version, type, r_version = getRversion())
+repo_remove(
+  repo,
+  package,
+  version,
+  type,
+  r_version = getRversion(),
+  commit = FALSE
+)
 }
 \arguments{
 \item{repo}{Path to the root directory of the package repository.}
 
 \item{package}{The name of the package to remove.}
 
-\item{version}{The version of the package to remove. Use \code{NULL} to remove all
-versions.}
+\item{version}{The version of the package to remove.
+Use \code{NULL} to remove all versions.}
 
-\item{type}{The type of the package to remove.}
+\item{type}{Type of packages. One of: \code{"source"}, \code{"win.binary"}, \code{"mac.binary"}.}
 
-\item{r_version}{If removing a binary package, the version of R that the
-package was built for.}
+\item{r_version}{For binary packages, the version of R they were built for.}
+
+\item{commit}{Logical. If \code{FALSE} return the list of files that \emph{would be}
+removed, without actually removing them.}
 }
 \value{
-The path(s) to the removed package file(s), invisibly.
+Path(s) to the removed package file(s), invisibly.
 }
 \description{
-Remove a package from a repository
+By default, shows a list of files that \emph{would be} removed.
+Explicitly specify \code{commit = TRUE} to actually remove them.
 }

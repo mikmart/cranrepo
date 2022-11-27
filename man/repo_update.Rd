@@ -2,20 +2,19 @@
 % Please edit documentation in R/repo.R
 \name{repo_update}
 \alias{repo_update}
-\title{Update a package index of a repository}
+\title{Update the package index of a repository}
 \usage{
 repo_update(repo, type, r_version = getRversion())
 }
 \arguments{
 \item{repo}{Path to the root directory of the package repository.}
 
-\item{type}{The type of packages to update the index for.}
+\item{type}{Type of packages. One of: \code{"source"}, \code{"win.binary"}, \code{"mac.binary"}.}
 
-\item{r_version}{If updating a binary package index, the R version to update
-the index for.}
+\item{r_version}{For binary packages, the version of R they were built for.}
 }
 \description{
-Do a full update of a package index in a repository. Functions in this
+Do a full update of the package index in a repository. Functions in this
 package update the index as they operate, so calling this should only be
 necessary if your index has gone out of sync due to external changes.
 }

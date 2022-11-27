@@ -4,22 +4,23 @@
 \alias{repo_insert}
 \title{Insert a package into a repository}
 \usage{
-repo_insert(repo, file, type = NULL, r_version = getRversion())
+repo_insert(repo, file, type, r_version = getRversion(), replace = FALSE)
 }
 \arguments{
 \item{repo}{Path to the root directory of the package repository.}
 
 \item{file}{Path to the source or binary package bundle to be added.}
 
-\item{type}{The type of package to be added. Will be inferred from the file
-name if left \code{NULL}.}
+\item{type}{Type of packages. One of: \code{"source"}, \code{"win.binary"}, \code{"mac.binary"}.}
 
-\item{r_version}{When inserting a binary package, the version of R that the
-package was built for.}
+\item{r_version}{For binary packages, the version of R they were built for.}
+
+\item{replace}{Logical. Should the package be replaced if already present?}
 }
 \value{
-The path to the inserted package file, invisibly.
+Path(s) to the inserted package file(s), invisibly.
 }
 \description{
-Insert a package into a repository
+You can insert multiple packages with one call, as long as they are of the
+same type and for the same version of R.
 }
