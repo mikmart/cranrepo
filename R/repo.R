@@ -6,7 +6,7 @@
 #' Binary distribution trees are always created to avoid errors
 #' when the repository is accessed via the `file://` protocol.
 #'
-#' @param dir Path to the directory to use as the repository root.
+#' @param root Path to the directory to use as the repository root.
 #'   Will be created if it does not exist.
 #' @param r_version The version of R to create binary distribution trees for.
 #'
@@ -15,10 +15,10 @@
 #' @family functions to manage repositories
 #' @concept manage
 #' @export
-repo_create <- function(dir = ".", r_version = getRversion()) {
-  repo <- fs::dir_create(dir)
+repo_create <- function(root = ".", r_version = getRversion()) {
+  repo <- fs::dir_create(root)
   for (type in PACKAGE_TYPES) {
-    repo_arm_create(repo_arm(repo, type, r_version))
+    contrib_url_create(contrib_url(repo, type, r_version))
   }
   invisible(repo)
 }
@@ -39,15 +39,15 @@ repo_create <- function(dir = ".", r_version = getRversion()) {
 #' @concept manage
 #' @export
 repo_insert <- function(repo, file, type, r_version = getRversion(), replace = TRUE) {
-  arm <- repo_arm(repo, type, r_version)
-  if (!replace && any(repo_arm_contains(arm, file) -> exist)) {
+  dir <- contrib_url(repo, type, r_version)
+  if (!replace && any(contrib_url_contains(dir, file) -> exist)) {
     rlang::abort(
       "Package(s) already present in repository.",
-      files = repo_arm_path(arm, fs::path_file(file))[which(exist)],
+      files = fs::path(dir, fs::path_file(file))[which(exist)],
       class = "cranrepo_error_packages_exist"
     )
   }
-  invisible(repo_arm_insert(arm, file))
+  invisible(contrib_url_insert(dir, file))
 }
 
 #' Remove a package from a repository
@@ -67,11 +67,11 @@ repo_insert <- function(repo, file, type, r_version = getRversion(), replace = T
 #' @concept manage
 #' @export
 repo_remove <- function(repo, package, version, type, r_version = getRversion(), commit = TRUE) {
-  arm <- repo_arm(repo, type, r_version)
+  dir <- contrib_url(repo, type, r_version)
   if (!commit) {
-    return(repo_arm_find(arm, package, version))
+    return(contrib_url_find(dir, package, version))
   }
-  invisible(repo_arm_remove(arm, package, version))
+  invisible(contrib_url_remove(dir, package, version))
 }
 
 #' Update the package index of a repository
@@ -86,7 +86,7 @@ repo_remove <- function(repo, package, version, type, r_version = getRversion(),
 #' @concept manage
 #' @export
 repo_update <- function(repo, type, r_version = getRversion()) {
-  repo_arm_update(repo_arm(repo, type, r_version))
+  contrib_url_update(contrib_url(repo, type, r_version))
 }
 
 #' Serve a repository over HTTP
