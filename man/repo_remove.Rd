@@ -35,3 +35,11 @@ Path(s) to the removed package file(s), invisibly.
 By default, shows a list of files that \emph{would be} removed.
 Explicitly specify \code{commit = TRUE} to actually remove them.
 }
+\seealso{
+Other functions to manage repositories: 
+\code{\link{repo_create}()},
+\code{\link{repo_insert}()},
+\code{\link{repo_update}()}
+}
+\concept{functions to manage repositories}
+\concept{manage}

@@ -23,3 +23,13 @@ a CRAN-like package repository suitable to \code{\link[=install.packages]{instal
 Binary distribution trees are always created to avoid errors
 when the repository is accessed via the \verb{file://} protocol.
 }
+\seealso{
+\code{\link[=repo_serve]{repo_serve()}} to serve packages from the repository over HTTP.
+
+Other functions to manage repositories: 
+\code{\link{repo_insert}()},
+\code{\link{repo_remove}()},
+\code{\link{repo_update}()}
+}
+\concept{functions to manage repositories}
+\concept{manage}

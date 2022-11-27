@@ -2,7 +2,7 @@
 % Please edit documentation in R/repo.R
 \name{repo_insert}
 \alias{repo_insert}
-\title{Insert a package into a repository}
+\title{Insert a package bundle into a repository}
 \usage{
 repo_insert(repo, file, type, r_version = getRversion(), replace = FALSE)
 }
@@ -24,3 +24,11 @@ Path(s) to the inserted package file(s), invisibly.
 You can insert multiple packages with one call, as long as they are of the
 same type and for the same version of R.
 }
+\seealso{
+Other functions to manage repositories: 
+\code{\link{repo_create}()},
+\code{\link{repo_remove}()},
+\code{\link{repo_update}()}
+}
+\concept{functions to manage repositories}
+\concept{manage}
