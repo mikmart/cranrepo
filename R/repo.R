@@ -17,26 +17,11 @@
 #' @export
 repo_create <- function(dir = ".", r_version = getRversion()) {
   repo <- fs::dir_create(dir)
-
   for (type in PACKAGE_TYPES) {
-    dir <- repo_packages_path(repo, type, r_version)
-    package_index_create(dir)
+    repo_arm_create(repo_arm(repo, type, r_version))
   }
-
   invisible(repo)
 }
-
-repo_packages_path <- function(repo, type, r_version = getRversion()) {
-  type <- rlang::arg_match0(type, PACKAGE_TYPES, error_call = rlang::caller_env())
-  if (type != "source") {
-    os <- switch(type, win.binary = "windows", mac.binary = "macosx")
-    fs::path(repo, "bin", os, "contrib", numeric_version(r_version)[, 1:2])
-  } else {
-    fs::path(repo, "src", "contrib")
-  }
-}
-
-PACKAGE_TYPES <- c("source", "win.binary", "mac.binary")
 
 #' Insert a package bundle into a repository
 #'
@@ -53,19 +38,16 @@ PACKAGE_TYPES <- c("source", "win.binary", "mac.binary")
 #' @family functions to manage repositories
 #' @concept manage
 #' @export
-repo_insert <- function(repo, file, type, r_version = getRversion(), replace = FALSE) {
-  dir <- repo_packages_path(repo, type, r_version)
-  dst <- fs::path(dir, fs::path_file(file))
-
-  if (!replace && any(fs::file_exists(dst))) {
-    abort_existing_packages(dst[fs::file_exists(dst)])
+repo_insert <- function(repo, file, type, r_version = getRversion(), replace = TRUE) {
+  arm <- repo_arm(repo, type, r_version)
+  if (!replace && any(repo_arm_contains(arm, file) -> exist)) {
+    rlang::abort(
+      "Package(s) already present in repository.",
+      files = repo_arm_path(arm, fs::path_file(file))[which(exist)],
+      class = "cranrepo_error_packages_exist"
+    )
   }
-
-  fs::dir_create(dir)
-  fs::file_copy(file, dst, overwrite = replace)
-  package_index_insert(dir, fs::path_file(dst))
-
-  invisible(dst)
+  invisible(repo_arm_insert(arm, file))
 }
 
 #' Remove a package from a repository
@@ -84,19 +66,12 @@ repo_insert <- function(repo, file, type, r_version = getRversion(), replace = F
 #' @family functions to manage repositories
 #' @concept manage
 #' @export
-repo_remove <- function(repo, package, version, type, r_version = getRversion(), commit = FALSE) {
-  dir <- repo_packages_path(repo, type, r_version)
-
-  files <- package_index_find(dir, package, version)
-  paths <- fs::path(dir, files)
-
-  if (commit) {
-    package_index_remove(dir, files)
-  } else {
-    inform_removal_candidates(paths)
+repo_remove <- function(repo, package, version, type, r_version = getRversion(), commit = TRUE) {
+  arm <- repo_arm(repo, type, r_version)
+  if (!commit) {
+    return(repo_arm_find(arm, package, version))
   }
-
-  invisible(paths)
+  invisible(repo_arm_remove(arm, package, version))
 }
 
 #' Update the package index of a repository
@@ -111,12 +86,7 @@ repo_remove <- function(repo, package, version, type, r_version = getRversion(),
 #' @concept manage
 #' @export
 repo_update <- function(repo, type, r_version = getRversion()) {
-  type <- rlang::arg_match0(type, PACKAGE_TYPES)
-  dir <- repo_packages_path(repo, type, r_version)
-
-  package_index_update(dir, type)
-
-  invisible(NULL)
+  repo_arm_update(repo_arm(repo, type, r_version))
 }
 
 #' Serve a repository over HTTP

@@ -10,7 +10,7 @@ repo_remove(
   version,
   type,
   r_version = getRversion(),
-  commit = FALSE
+  commit = TRUE
 )
 }
 \arguments{

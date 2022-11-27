@@ -4,7 +4,7 @@
 \alias{repo_insert}
 \title{Insert a package bundle into a repository}
 \usage{
-repo_insert(repo, file, type, r_version = getRversion(), replace = FALSE)
+repo_insert(repo, file, type, r_version = getRversion(), replace = TRUE)
 }
 \arguments{
 \item{repo}{Path to the root directory of the package repository.}
