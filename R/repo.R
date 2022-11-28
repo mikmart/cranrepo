@@ -104,6 +104,9 @@ repo_serve <- function(repo, ...) {
   if (requireNamespace("servr", quietly = TRUE)) {
     servr::httd(dir = repo, ...)
   } else {
-    rlang::abort("This function requires the {servr} package to be installed.")
+    rlang::abort(c(
+      "This function requires the {servr} package.",
+      i = "Install it with `install.packages(\"servr\")`."
+    ))
   }
 }
