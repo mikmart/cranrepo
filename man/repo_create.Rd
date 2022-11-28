@@ -4,10 +4,10 @@
 \alias{repo_create}
 \title{Create a CRAN-like package repository}
 \usage{
-repo_create(dir = ".", r_version = getRversion())
+repo_create(root = ".", r_version = getRversion())
 }
 \arguments{
-\item{dir}{Path to the directory to use as the repository root.
+\item{root}{Path to the directory to use as the repository root.
 Will be created if it does not exist.}
 
 \item{r_version}{The version of R to create binary distribution trees for.}

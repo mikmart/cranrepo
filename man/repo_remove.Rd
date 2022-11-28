@@ -32,8 +32,8 @@ removed, without actually removing them.}
 Path(s) to the removed package file(s), invisibly.
 }
 \description{
-By default, shows a list of files that \emph{would be} removed.
-Explicitly specify \code{commit = TRUE} to actually remove them.
+For a dry run, specify \code{commit = FALSE} to just show a list of files
+that \emph{would be} removed.
 }
 \seealso{
 Other functions to manage repositories: 
