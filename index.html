@@ -63,13 +63,18 @@
 <div class="page-header"><h1 id="cranrepo">cranrepo<a class="anchor" aria-label="anchor" href="#cranrepo"></a>
 </h1></div>
 <!-- badges: start -->
-<!-- badges: end -->
-<p>cranrepo builds on <a href="https://cran.r-project.org/package=cranlike" class="external-link">cranlike</a> to give you the basic tools to set up your own CRAN-like R package repository. You can:</p>
+
+<p>cranrepo gives you the basic tools to set up your own CRAN-like R package repository. You can:</p>
 <ul>
 <li>Set up a repository directory structure and index with <code><a href="reference/repo_create.html">repo_create()</a></code>.</li>
 <li>Add source and binary package bundles to a repository with <code><a href="reference/repo_insert.html">repo_insert()</a></code>.</li>
 <li>Remove versions of packages from a repository with <code><a href="reference/repo_remove.html">repo_remove()</a></code>.</li>
 <li>Serve repositories over HTTP for development purposes with <code><a href="reference/repo_serve.html">repo_serve()</a></code>.</li>
+</ul>
+<p>Other key features include:</p>
+<ul>
+<li>Fast updates to the package index, thanks to <a href="https://cran.r-project.org/package=cranlike" class="external-link">cranlike</a> under the hood.</li>
+<li>A concise yet sufficient interface to easily build other tools on top of.</li>
 </ul>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -78,6 +83,18 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"mikmart/cranrepo"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="motivation">Motivation<a class="anchor" aria-label="anchor" href="#motivation"></a>
+</h2>
+<p>Other packages in the repository management space include:</p>
+<ul>
+<li>
+<a href="https://cran.r-project.org/package=miniCRAN" class="external-link">miniCRAN</a>, which focuses on creating complete snapshots of sets of curated packages from CRAN-like repos, but lacks support for packages from other sources, such as local bundles.</li>
+<li>
+<a href="https://cran.r-project.org/package=drat" class="external-link">drat</a>, which has a broad set of tools to manage your own repository, but also has many high level features, conveniences (especially around git and GitHub), and opinions that can cause friction when trying to use it as a base for other tools.</li>
+</ul>
+<p>The goal of cranrepo is to strike a balance between being high level enough to be useful on its own for setting up a repository, yet low level enough to make it easy to build other tools on top of. Essentially, it’s the set of fundamental repository management tools I wish drat exposed.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -111,7 +128,13 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
+<li><a href="https://github.com/mikmart/cranrepo/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/mikmart/cranrepo/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>
