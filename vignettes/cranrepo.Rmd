@@ -1,0 +1,178 @@
+---
+title: "cranrepo"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{cranrepo}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Set up a CRAN-like repository
+
+cranrepo gives you the basic tools you need to set up a CRAN-like repository.
+In this vignette, we'll go through the steps you'd take to do that.
+
+```{r setup}
+library(cranrepo)
+```
+
+## Create a repository directory
+
+The first step to creating a repository is to set up a directory structure,
+and the `PACKAGES` files that act as the package indexes. cranrepo has a single
+function to do both: `repo_create()`.
+
+Let's set up a repository structure in a temporary location:
+
+```{r create}
+repo <- repo_create(fs::path_temp("cranrepo/repos/latest"))
+```
+
+The created directory structure contains distribution trees for all three main
+types of packages: source, Windows binary, and Mac binary packages. That ensures
+that our repository can be used via the `file:` protocol without errors on any
+major platform without throwing errors about missing files; something that's of
+particular usefulness when setting up an internal repository shared via a
+network drive, for example.
+
+```{r view-repo}
+fs::dir_tree(repo)
+```
+
+In addition to the usual `PACKAGES` files, you'll notice our distribution trees
+contain a `PACKAGES.db` file. This is the SQLite databse used by
+[cranlike](https://cran.r-project.org/package=cranlike) under the hood
+to manage the repository index in an efficient manner.
+
+## Add packages to your repository
+
+The next thing we'll need to do is to add some packages to our repository.
+Let's get a package to insert from CRAN. We'll get both the source and binary
+bundle. It's always good practice to serve the source bundle from your repository,
+and the pre-built binary makes the package accessible to a wider audience.
+
+```{r get-package}
+op <- options(repos = c(CRAN = "https://cloud.r-project.org"))
+src <- download.packages("ggplot2", tempdir(), type = "source")[, 2]
+bin <- download.packages("ggplot2", tempdir(), type = "win.binary")[, 2]
+options(op)
+```
+
+Instead of getting package bundles from another repository like CRAN, we could
+just as well build them for our own local package ourselves with `R CMD build`
+and `R CMD INSTALL --build`. All that matters is that we have the appropriate
+bundle(s) available for inserting into our repository.
+
+Now that we have some package bundles, we can add them to our repository with
+`repo_insert()`. You will, however, need to let cranrepo know what type of
+bundle you are inserting. That's one of the deliberate design decisions made
+in an effort find the right level of abstraction for the package.
+
+```{r insert}
+repo_insert(repo, src, "source")
+repo_insert(repo, bin, "win.binary")
+```
+
+We can verify that the packages were successfully inserted by checking the
+available packages in our repo:
+
+```{r available}
+available_packages <- function(repos, type = "source") {
+  available.packages(repos = repos, type = type)[, c("Package", "Version")]
+}
+
+available_packages(paste0("file:", repo), type = "source")
+available_packages(paste0("file:", repo), type = "binary")
+```
+
+Congratulations! You've set up your own CRAN-like repository serving source and
+binary packages. That said, there's still some operations you'll need in order
+to manage the lifecycle of a package repository.
+
+## Serving your repository over HTTP
+
+Earlier, we accessed our repository from our local computer using the `file:`
+protocol. Unless your repository was created on a network location, chances are
+that other users won't be able to access the repository this way. Instead, you'll
+need to either move the repository to a network location, or serve the files
+over a web protocol like HTTP. cranrepo provides a convenience function,
+`repo_serve()`, which can be used to start a simple HTTP server on your PC to
+let others access our repository.
+
+```r
+repo_serve(repo)
+```
+
+By default, the repository is served on port 4321. We can check the available
+packages again, from another R session:
+
+```r
+available_packages("http://localhost:4321")
+```
+
+`repo_serve()` is mainly provided for convenience and testing purposes when
+developing a repository. When actually publishing a repository for you consumers,
+it's like you'd have a different solution for hosting the repository as e.g. static files.
+
+You now have the basics to set up a repository, add packages, and distribute
+them to collaborators. Next, let's tackle a few admin tasks.
+
+## Removing a package
+
+Sometimes (hopefully rarely) you'll realize you added a package to your repository
+that you really shouldn't have. To recover and remove the package, `repo_remove()`
+comes to your aid. Let's remove all the versions of ggplot2 Windows binaries
+from our repository, including the one we added earlier:
+
+```{r remove}
+removed <- repo_remove(repo, "ggplot2", version = NULL, type = "win.binary")
+```
+
+For transparency, we get back the paths to the files that were removed:
+
+```{r removed}
+removed
+```
+
+## Updating the package index
+
+If you make external changes to the package repository, you may end up with a
+situation where the package index is out of sync with the actual files in the
+repository. For example, let's manually delete the source bundle of ggplot2 we
+added earlier:
+
+```{r remove-manual}
+fs::file_delete(fs::path(repo, "src/contrib", fs::path_file(src)))
+```
+
+The repository still reports the package as being available:
+
+```{r update-before}
+available_packages(paste0("file:", repo))
+```
+
+We'll need to call `repo_update()` to bring the package index up to date,
+and report to our consumers that the package is no longer available:
+
+```{r update}
+repo_update(repo, "source")
+available_packages(paste0("file:", repo))
+```
+
+## Conclusion
+
+To wrap up, let's clean up the files we created for this vignette:
+
+```{r cleanup}
+fs::dir_delete(repo)
+```
+
+There we go! You now have the basic tools and knowledge to set up and manage
+your own CRAN-like repository. Use them wisely.
