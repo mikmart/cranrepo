@@ -103,6 +103,20 @@ removed, without actually removing them.</p></dd>
 <code><a href="repo_update.html">repo_update</a>()</code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># Remove a specific version of a package</span></span></span>
+<span class="r-in"><span><span class="fu">repo_remove</span><span class="op">(</span><span class="st">"./repos/latest"</span>, <span class="st">"foo"</span>, <span class="st">"0.1.0"</span>, <span class="st">"source"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Remove all versions of a package</span></span></span>
+<span class="r-in"><span><span class="fu">repo_remove</span><span class="op">(</span><span class="st">"./repos/latest"</span>, <span class="st">"foo"</span>, <span class="cn">NULL</span>, <span class="st">"win.binary"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Get a list of packages that would be removed</span></span></span>
+<span class="r-in"><span><span class="fu">repo_remove</span><span class="op">(</span><span class="st">"./repos/latest"</span>, <span class="st">"foo"</span>, <span class="cn">NULL</span>, <span class="st">"mac.binary"</span>, commit <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
