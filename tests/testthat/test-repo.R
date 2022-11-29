@@ -60,4 +60,10 @@ test_that("can use `version = NULL` to remove all versions", {
   expect_false(fs::file_exists(repo_path("src/contrib", src)))
 })
 
+test_that("missing Suggested package throws informative error", {
+  withr::with_libpaths(character(), {
+    expect_snapshot_error(repo_serve(repo))
+  })
+})
+
 fs::dir_delete(repo)
