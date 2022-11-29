@@ -11,10 +11,13 @@ Imports:
     fs,
     rlang
 Suggests: 
-    servr
+    testthat (>= 3.0.0),
+    servr,
+    pkgbuild
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 URL: https://github.com/mikmart/cranrepo,
     https://mikmart.github.io/cranrepo/
 BugReports: https://github.com/mikmart/cranrepo/issues
+Config/testthat/edition: 3
