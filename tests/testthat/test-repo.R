@@ -45,22 +45,30 @@ test_that("removing packages works", {
   src <- "cranrepo_0.1.0.tar.gz"
   repo_remove(repo, "cranrepo", "0.1.0", "source")
   expect_false(fs::file_exists(repo_path("src/contrib", src)))
+
+  bin <- "cranrepo_0.1.0.zip"
+  repo_remove(repo, "cranrepo", NULL, "win.binary", "4.0")
+  expect_false(fs::file_exists(repo_path("bin/windows/contrib/4.0", bin)))
 })
 
 test_that("can sync exteral changes to package index", {
   bin <- "cranrepo_0.1.0.zip"
-  fs::file_delete(repo_path("bin/windows/contrib/4.0", bin))
+  dir <- repo_path("bin/windows/contrib/4.0")
+
+  # Externally added files are synced  
+  fs::file_copy(bin, dir)
+  expect_false(contrib_url_contains(dir, bin))
   repo_update(repo, "win.binary", "4.0")
-  expect_false(contrib_url_contains(repo_path("bin/windows/contrib/4.0"), bin))
+  expect_true(contrib_url_contains(dir, bin))
+
+  # Externally deleted files are synced  
+  fs::file_delete(fs::path(dir, bin))
+  expect_true(contrib_url_contains(dir, bin))
+  repo_update(repo, "win.binary", "4.0")
+  expect_false(contrib_url_contains(dir, bin))
 })
 
-test_that("can use `version = NULL` to remove all versions", {
-  src <- "cranrepo_0.1.0.tar.gz"
-  repo_remove(repo, "cranrepo", NULL, "source")
-  expect_false(fs::file_exists(repo_path("src/contrib", src)))
-})
-
-test_that("missing Suggested package throws informative error", {
+test_that("missing `Suggested` package throws informative error", {
   withr::with_libpaths(character(), {
     expect_snapshot_error(repo_serve(repo))
   })
