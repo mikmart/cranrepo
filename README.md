@@ -3,6 +3,7 @@
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/mikmart/cranrepo/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mikmart/cranrepo/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/mikmart/cranrepo/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mikmart/cranrepo?branch=main)
 <!-- badges: end -->
 
 cranrepo gives you the basic tools to set up your own CRAN-like R package repository. You can:

@@ -13,7 +13,8 @@ Imports:
 Suggests: 
     testthat (>= 3.0.0),
     servr,
-    pkgbuild
+    pkgbuild,
+    covr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
