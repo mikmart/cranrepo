@@ -14,6 +14,11 @@
 #' @seealso [repo_serve()] to serve packages from the repository over HTTP.
 #' @family functions to manage repositories
 #' @concept manage
+#' @examples
+#' \dontrun{
+#' # Create a package repository
+#' repo_create("./repos/latest")
+#' }
 #' @export
 repo_create <- function(root = ".", r_version = getRversion()) {
   repo <- fs::dir_create(root)
@@ -37,6 +42,19 @@ repo_create <- function(root = ".", r_version = getRversion()) {
 #' @return Path(s) to the inserted package file(s), invisibly.
 #' @family functions to manage repositories
 #' @concept manage
+#' @examples
+#' \dontrun{
+#' # Insert different types of package bundles
+#' repo_insert("./repos/latest", "foo_0.1.0.tar.gz", "source")
+#' repo_insert("./repos/latest", "foo_0.1.0.zip", "win.binary")
+#' repo_insert("./repos/latest", "foo_0.1.0.tgz", "mac.binary")
+#'
+#' # Throw an error if trying to insert a package that already exists
+#' repo_insert("./repos/latest", "foo_0.1.0.tar.gz", "source", replace = FALSE)
+#'
+#' # Insert a binary built for a different version of R
+#' repo_insert("./repos/latest", "foo_0.1.0.zip", "win.binary", r_version = "4.0")
+#' }
 #' @export
 repo_insert <- function(repo, file, type, r_version = getRversion(), replace = TRUE) {
   dir <- contrib_url(repo, type, r_version)
@@ -65,6 +83,17 @@ repo_insert <- function(repo, file, type, r_version = getRversion(), replace = T
 #' @return Path(s) to the removed package file(s), invisibly.
 #' @family functions to manage repositories
 #' @concept manage
+#' @examples
+#' \dontrun{
+#' # Remove a specific version of a package
+#' repo_remove("./repos/latest", "foo", "0.1.0", "source")
+#'
+#' # Remove all versions of a package
+#' repo_remove("./repos/latest", "foo", NULL, "win.binary")
+#'
+#' # Get a list of packages that would be removed
+#' repo_remove("./repos/latest", "foo", NULL, "mac.binary", commit = FALSE)
+#' }
 #' @export
 repo_remove <- function(repo, package, version, type, r_version = getRversion(), commit = TRUE) {
   dir <- contrib_url(repo, type, r_version)
@@ -84,6 +113,11 @@ repo_remove <- function(repo, package, version, type, r_version = getRversion(),
 #'
 #' @family functions to manage repositories
 #' @concept manage
+#' @examples
+#' \dontrun{
+#' # Update a package index that has gone out of sync
+#' repo_update("./repos/latest", "source")
+#' }
 #' @export
 repo_update <- function(repo, type, r_version = getRversion()) {
   contrib_url_update(contrib_url(repo, type, r_version))
@@ -99,6 +133,10 @@ repo_update <- function(repo, type, r_version = getRversion()) {
 #' @param ... Additional arguments passed on to [servr::httd()].
 #'
 #' @concept develop
+#' @examples
+#' \dontrun{
+#' repo_serve("./repos/latest")
+#' }
 #' @export
 repo_serve <- function(repo, ...) {
   if (requireNamespace("servr", quietly = TRUE)) {

@@ -24,6 +24,20 @@ Path(s) to the inserted package file(s), invisibly.
 You can insert multiple packages with one call, as long as they are of the
 same type and for the same version of R.
 }
+\examples{
+\dontrun{
+# Insert different types of package bundles
+repo_insert("./repos/latest", "foo_0.1.0.tar.gz", "source")
+repo_insert("./repos/latest", "foo_0.1.0.zip", "win.binary")
+repo_insert("./repos/latest", "foo_0.1.0.tgz", "mac.binary")
+
+# Throw an error if trying to insert a package that already exists
+repo_insert("./repos/latest", "foo_0.1.0.tar.gz", "source", replace = FALSE)
+
+# Insert a binary built for a different version of R
+repo_insert("./repos/latest", "foo_0.1.0.zip", "win.binary", r_version = "4.0")
+}
+}
 \seealso{
 Other functions to manage repositories: 
 \code{\link{repo_create}()},

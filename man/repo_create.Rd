@@ -23,6 +23,12 @@ a CRAN-like package repository suitable to \code{\link[=install.packages]{instal
 Binary distribution trees are always created to avoid errors
 when the repository is accessed via the \verb{file://} protocol.
 }
+\examples{
+\dontrun{
+# Create a package repository
+repo_create("./repos/latest")
+}
+}
 \seealso{
 \code{\link[=repo_serve]{repo_serve()}} to serve packages from the repository over HTTP.
 

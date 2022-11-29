@@ -18,6 +18,12 @@ Do a full update of the package index in a repository. Functions in this
 package update the index as they operate, so calling this should only be
 necessary if your index has gone out of sync due to external changes.
 }
+\examples{
+\dontrun{
+# Update a package index that has gone out of sync
+repo_update("./repos/latest", "source")
+}
+}
 \seealso{
 Other functions to manage repositories: 
 \code{\link{repo_create}()},

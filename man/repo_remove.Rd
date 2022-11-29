@@ -35,6 +35,18 @@ Path(s) to the removed package file(s), invisibly.
 For a dry run, specify \code{commit = FALSE} to just show a list of files
 that \emph{would be} removed.
 }
+\examples{
+\dontrun{
+# Remove a specific version of a package
+repo_remove("./repos/latest", "foo", "0.1.0", "source")
+
+# Remove all versions of a package
+repo_remove("./repos/latest", "foo", NULL, "win.binary")
+
+# Get a list of packages that would be removed
+repo_remove("./repos/latest", "foo", NULL, "mac.binary", commit = FALSE)
+}
+}
 \seealso{
 Other functions to manage repositories: 
 \code{\link{repo_create}()},
