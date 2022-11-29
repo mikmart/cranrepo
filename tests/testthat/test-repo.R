@@ -21,7 +21,7 @@ test_that("inserting packages works", {
   src <- "cranrepo_0.1.0.tar.gz"
   repo_insert(repo, src, "source")
   expect_file_exists(repo_path("src/contrib", src))
-  
+
   bin <- "cranrepo_0.1.0.zip"
   repo_insert(repo, bin, "win.binary", "4.0")
   expect_file_exists(repo_path("bin/windows/contrib/4.0", bin))
@@ -55,23 +55,17 @@ test_that("can sync exteral changes to package index", {
   bin <- "cranrepo_0.1.0.zip"
   dir <- repo_path("bin/windows/contrib/4.0")
 
-  # Externally added files are synced  
+  # Externally added files are synced
   fs::file_copy(bin, dir)
   expect_false(contrib_url_contains(dir, bin))
   repo_update(repo, "win.binary", "4.0")
   expect_true(contrib_url_contains(dir, bin))
 
-  # Externally deleted files are synced  
+  # Externally deleted files are synced
   fs::file_delete(fs::path(dir, bin))
   expect_true(contrib_url_contains(dir, bin))
   repo_update(repo, "win.binary", "4.0")
   expect_false(contrib_url_contains(dir, bin))
-})
-
-test_that("missing `Suggested` package throws informative error", {
-  withr::with_libpaths(character(), {
-    expect_snapshot_error(repo_serve(repo))
-  })
 })
 
 fs::dir_delete(repo)
