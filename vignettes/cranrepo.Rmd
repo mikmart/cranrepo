@@ -1,8 +1,8 @@
 ---
-title: "cranrepo"
+title: "Set up a CRAN-like repository"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{cranrepo}
+  %\VignetteIndexEntry{Set up a CRAN-like repository}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,16 +14,16 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Set up a CRAN-like repository
+## Introduction
 
-cranrepo gives you the basic tools you need to set up a CRAN-like repository.
-In this vignette, we'll go through the steps you'd take to do that.
+cranrepo gives you the basic tools you need to set up a CRAN-like R package repository.
+In this vignette, we'll go through the steps you'd take to do just that.
 
 ```{r setup}
 library(cranrepo)
 ```
 
-## Create a repository directory
+## Create a repository
 
 The first step to creating a repository is to set up a directory structure,
 and the `PACKAGES` files that act as the package indexes. cranrepo has a single
@@ -51,7 +51,7 @@ contain a `PACKAGES.db` file. This is the SQLite databse used by
 [cranlike](https://cran.r-project.org/package=cranlike) under the hood
 to manage the repository index in an efficient manner.
 
-## Add packages to your repository
+## Add packages
 
 The next thing we'll need to do is to add some packages to our repository.
 Let's get a package to insert from CRAN. We'll get both the source and binary
@@ -81,7 +81,7 @@ repo_insert(repo, bin, "win.binary")
 ```
 
 We can verify that the packages were successfully inserted by checking the
-available packages in our repo:
+available packages:
 
 ```{r available}
 available_packages <- function(repos, type = "source") {
@@ -96,52 +96,51 @@ Congratulations! You've set up your own CRAN-like repository serving source and
 binary packages. That said, there's still some operations you'll need in order
 to manage the lifecycle of a package repository.
 
-## Serving your repository over HTTP
+## Serve over HTTP
 
 Earlier, we accessed our repository from our local computer using the `file:`
 protocol. Unless your repository was created on a network location, chances are
 that other users won't be able to access the repository this way. Instead, you'll
 need to either move the repository to a network location, or serve the files
-over a web protocol like HTTP. cranrepo provides a convenience function,
-`repo_serve()`, which can be used to start a simple HTTP server on your PC to
-let others access our repository.
+over a web protocol like HTTP.
+
+A package repository is just a collection of static files, so it can be served
+over HTTP by a static server, such as `servr::httd()`. Just point the server at
+the repository root directory:
 
 ```r
-repo_serve(repo)
+servr::httd(repo)
 ```
 
-By default, the repository is served on port 4321. We can check the available
+By default, `httd()` serves the repository on port 4321. We can check the available
 packages again, from another R session:
 
 ```r
 available_packages("http://localhost:4321")
 ```
 
-`repo_serve()` is mainly provided for convenience and testing purposes when
-developing a repository. When actually publishing a repository for you consumers,
-it's like you'd have a different solution for hosting the repository as e.g. static files.
-
 You now have the basics to set up a repository, add packages, and distribute
 them to collaborators. Next, let's tackle a few admin tasks.
 
-## Removing a package
+## Remove packages
 
 Sometimes (hopefully rarely) you'll realize you added a package to your repository
 that you really shouldn't have. To recover and remove the package, `repo_remove()`
 comes to your aid. Let's remove all the versions of ggplot2 Windows binaries
-from our repository, including the one we added earlier:
+from our repository:
 
 ```{r remove}
 removed <- repo_remove(repo, "ggplot2", version = NULL, type = "win.binary")
 ```
 
-For transparency, we get back the paths to the files that were removed:
+We are returned the paths to the files that were removed, but this happens
+invisibly, so we have to print them out explicitly:
 
 ```{r removed}
 removed
 ```
 
-## Updating the package index
+## Update the index
 
 If you make external changes to the package repository, you may end up with a
 situation where the package index is out of sync with the actual files in the
