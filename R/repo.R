@@ -11,6 +11,7 @@
 #' @param r_version The version of R to create binary distribution trees for.
 #'
 #' @return Path to the repository root directory, invisibly.
+#' @seealso [servr::httd()] to serve packages from the repository over HTTP.
 #' @family functions to manage repositories
 #' @concept manage
 #' @examples
