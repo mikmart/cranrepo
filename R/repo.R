@@ -11,7 +11,6 @@
 #' @param r_version The version of R to create binary distribution trees for.
 #'
 #' @return Path to the repository root directory, invisibly.
-#' @seealso [repo_serve()] to serve packages from the repository over HTTP.
 #' @family functions to manage repositories
 #' @concept manage
 #' @examples
@@ -121,30 +120,4 @@ repo_remove <- function(repo, package, version, type, r_version = getRversion(),
 #' @export
 repo_update <- function(repo, type, r_version = getRversion()) {
   contrib_url_update(contrib_url(repo, type, r_version))
-}
-
-#' Serve a repository over HTTP
-#'
-#' Serve packages from a repository over HTTP locally. For production use,
-#' you would likely have a different file server, but when setting up your
-#' repository it can be useful to test the behaviour over a web protocol.
-#'
-#' @inheritParams repo_insert
-#' @param ... Additional arguments passed on to [servr::httd()].
-#'
-#' @concept develop
-#' @examples
-#' \dontrun{
-#' repo_serve("./repos/latest")
-#' }
-#' @export
-repo_serve <- function(repo, ...) {
-  if (requireNamespace("servr", quietly = TRUE)) {
-    servr::httd(dir = repo, ...)
-  } else {
-    rlang::abort(c(
-      "This function requires the {servr} package.",
-      i = "Install it with `install.packages(\"servr\")`."
-    ))
-  }
 }

@@ -3,5 +3,4 @@
 export(repo_create)
 export(repo_insert)
 export(repo_remove)
-export(repo_serve)
 export(repo_update)

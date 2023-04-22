@@ -30,8 +30,6 @@ repo_create("./repos/latest")
 }
 }
 \seealso{
-\code{\link[=repo_serve]{repo_serve()}} to serve packages from the repository over HTTP.
-
 Other functions to manage repositories: 
 \code{\link{repo_insert}()},
 \code{\link{repo_remove}()},

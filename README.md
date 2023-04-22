@@ -11,7 +11,7 @@ cranrepo gives you the basic tools to set up your own CRAN-like R package reposi
 - Set up a repository directory structure and index with `repo_create()`.
 - Add source and binary package bundles to a repository with `repo_insert()`.
 - Remove versions of packages from a repository with `repo_remove()`.
-- Serve repositories over HTTP for development purposes with `repo_serve()`.
+- Sync the package index with external changes with `repo_update()`.
 
 Other key features include:
 
